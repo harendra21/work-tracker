@@ -20,12 +20,15 @@ jobs:
         run: |
           curl -sL https://appwrite.io/cli/install.sh | bash
           echo "$HOME/.appwrite" >> $GITHUB_PATH
-      - name: Login to Appwrite
-        run: appwrite login --pat "${{ secrets.APPWRITE_PAT }}"
       - name: Build web dashboard
         run: |
           cd web
           npm ci
           npm run build
       - name: Deploy site
-        run: appwrite push sites --all --force
+        run: |
+          appwrite client \
+            --endpoint "https://us.cloud.appwrite.io/v1" \
+            --project-id "work-tracker" \
+            --key "${{ secrets.APPWRITE_API_KEY }}"
+          appwrite push sites --all --force
