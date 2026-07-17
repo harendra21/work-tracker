@@ -28,4 +28,4 @@ jobs:
             --endpoint "https://cloud.appwrite.io/v1" \
             --project-id "work-tracker" \
             --key "${{ secrets.APPWRITE_API_KEY }}"
-          appwrite push sites --all --force
+          yes | appwrite push sites --all --force --activate
