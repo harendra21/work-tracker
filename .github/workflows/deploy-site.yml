@@ -3,9 +3,6 @@ name: Deploy Dashboard to Appwrite Sites
 on:
   push:
     branches: [main, master]
-    paths:
-      - "web/**"
-      - "appwrite.config.json"
   workflow_dispatch:
 
 jobs:
