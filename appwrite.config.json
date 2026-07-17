@@ -20,7 +20,7 @@
             "adapter": "static",
             "fallbackFile": "index.html",
             "buildRuntime": "node-22",
-            "buildSpecification": "s-1vcpu-512mb",
+            "buildSpecification": "s-2vcpu-2gb",
             "installCommand": "npm install",
             "buildCommand": "npm run build",
             "outputDirectory": "./dist",
