@@ -16,7 +16,7 @@
             "name": "Work Tracker Dashboard",
             "enabled": true,
             "logging": true,
-            "framework": "static",
+            "framework": "vite",
             "adapter": "static",
             "fallbackFile": "index.html",
             "buildRuntime": "node-22",
