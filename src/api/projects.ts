@@ -50,7 +50,7 @@ export class ProjectService {
   ) {}
 
   get userId(): string | undefined {
-    return this.config.appwriteUserId || undefined;
+    return this.config.userId || undefined;
   }
 
   /**

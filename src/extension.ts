@@ -29,7 +29,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   config = loadConfig();
   log.initLogger(config.debug);
 
-  log.info(`activating — apiKey set: ${!!config.apiKey}, project: ${config.appwriteProjectId}`);
+  log.info(`activating — apiKey set: ${!!config.apiKey}`);
 
   const storageDir = context.globalStorageUri.fsPath;
   queue = new OfflineQueue(storageDir);
@@ -38,7 +38,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   let services: AppwriteServices | undefined;
   try {
     if (config.apiKey) {
-      services = await buildClient(config);
+      services = await buildClient({ apiKey: config.apiKey });
       log.info(`client built — userId: ${services.userId}`);
     } else {
       log.warn("no API key configured; run 'Work Tracker: Setup API Key'");
@@ -48,8 +48,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   }
 
   if (services) {
-    // Store userId in config for other modules
-    config.appwriteUserId = services.userId;
+    config.userId = services.userId;
 
     heartbeatService = new HeartbeatServiceImpl(services, config);
     projectService = new ProjectService(services, config);
@@ -152,7 +151,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   context.subscriptions.push(
     vscode.commands.registerCommand("workTracker.status", () => {
       const q = queue?.pendingCount() ?? 0;
-      const uid = config.appwriteUserId || "not configured";
+      const uid = config.userId || "not configured";
       log.show();
       log.info(`user: ${uid} · queued: ${q} · tracking: ${config.trackingEnabled}`);
       vscode.window.showInformationMessage(

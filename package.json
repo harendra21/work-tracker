@@ -75,26 +75,6 @@
     "configuration": {
       "title": "Work Tracker",
       "properties": {
-        "workTracker.appwriteEndpoint": {
-          "type": "string",
-          "default": "https://cloud.appwrite.io/v1",
-          "description": "Appwrite API endpoint URL."
-        },
-        "workTracker.appwriteProjectId": {
-          "type": "string",
-          "default": "",
-          "description": "Appwrite project ID."
-        },
-        "workTracker.appwriteApiKey": {
-          "type": "string",
-          "default": "",
-          "description": "Appwrite API key with databases + tables scopes."
-        },
-        "workTracker.appwriteUserId": {
-          "type": "string",
-          "default": "",
-          "description": "Your Appwrite User ID (found in Console → Auth → Users)."
-        },
         "workTracker.apiKey": {
           "type": "string",
           "default": "",

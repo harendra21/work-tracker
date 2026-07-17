@@ -50,7 +50,7 @@ export class DashboardPanel {
     if (!this.panel) {
       return;
     }
-    const userId = this.config.appwriteUserId;
+    const userId = this.config.userId;
     if (!userId) {
       this.panel.webview.html = dashboardHtml(this.emptyState());
       return;

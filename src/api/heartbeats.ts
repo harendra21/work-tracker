@@ -30,7 +30,7 @@ export class HeartbeatServiceImpl implements HeartbeatService {
   ) {}
 
   private get userId(): string | undefined {
-    return this.config?.appwriteUserId || undefined;
+    return this.config?.userId || undefined;
   }
 
   async upload(hb: Heartbeat): Promise<void> {

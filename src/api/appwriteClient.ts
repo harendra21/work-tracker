@@ -1,10 +1,4 @@
-/**
- * Appwrite client wrapper.
- * The API key is the row ID of a row in the api_keys table.
- * We look up that row to get the userId.
- */
 import { Client, TablesDB, Query, Models } from "appwrite";
-import { WorkTrackerConfig } from "../config";
 import * as log from "../util/logger";
 
 export interface AppwriteServices {
@@ -19,10 +13,9 @@ interface ApiKeyRow extends Models.Row {
   name: string;
 }
 
-/**
- * Look up userId from the api_keys table using the key value.
- * The web dashboard stores keys in the api_keys table; the key value IS the identifier.
- */
+const ENDPOINT = "https://cloud.appwrite.io/v1";
+const PROJECT_ID = "work-tracker";
+
 async function lookupUserId(
   services: { tables: TablesDB },
   apiKey: string
@@ -46,19 +39,12 @@ async function lookupUserId(
   }
 }
 
-/**
- * Build an authenticated client using the generated API key.
- * The key is looked up in the api_keys table to find the userId.
- */
-export async function buildClient(cfg: WorkTrackerConfig): Promise<AppwriteServices> {
-  if (!cfg.appwriteProjectId) {
-    throw new Error("workTracker.appwriteProjectId is not set.");
-  }
+export async function buildClient(cfg: { apiKey: string }): Promise<AppwriteServices> {
   if (!cfg.apiKey) {
     throw new Error("workTracker.apiKey is not set. Run 'Work Tracker: Setup API Key' first.");
   }
 
-  const client = new Client().setEndpoint(cfg.appwriteEndpoint).setProject(cfg.appwriteProjectId);
+  const client = new Client().setEndpoint(ENDPOINT).setProject(PROJECT_ID);
   const tables = new TablesDB(client);
   const services = { client, tables };
 

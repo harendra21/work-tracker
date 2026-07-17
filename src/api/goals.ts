@@ -24,7 +24,7 @@ export class GoalService {
   ) {}
 
   private get userId(): string | undefined {
-    return this.config.appwriteUserId || undefined;
+    return this.config.userId || undefined;
   }
 
   async list(): Promise<Goal[]> {

@@ -221,3 +221,6 @@ Issues and PRs welcome at [github.com/harendra21/work-tracker](https://github.co
 ## 📄 License
 
 [MIT](LICENSE)
+
+
+npm run package && npx vsce publish
