@@ -129,6 +129,7 @@
     }
   },
   "scripts": {
+    "vscode:prepublish": "node esbuild.config.js --production",
     "build": "node esbuild.config.js --production",
     "watch": "node esbuild.config.js --watch",
     "package": "npm run build && vsce package",
