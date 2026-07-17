@@ -1,0 +1,31 @@
+name: Deploy Dashboard to Appwrite Sites
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "web/**"
+      - "appwrite.config.json"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+      - name: Install Appwrite CLI
+        run: |
+          curl -sL https://appwrite.io/cli/install.sh | bash
+          echo "$HOME/.appwrite" >> $GITHUB_PATH
+      - name: Login to Appwrite
+        run: appwrite login --pat "${{ secrets.APPWRITE_PAT }}"
+      - name: Build web dashboard
+        run: |
+          cd web
+          npm ci
+          npm run build
+      - name: Deploy site
+        run: appwrite push sites --all --force

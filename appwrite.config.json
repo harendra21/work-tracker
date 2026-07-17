@@ -1,5 +1,31 @@
 {
     "organizationId": "64f1a3894de388392658",
     "projectId": "work-tracker",
-    "projectName": "Work Tracker"
+    "projectName": "Work Tracker",
+    "endpoint": "https://us.cloud.appwrite.io/v1",
+    "settings": {
+        "services": {
+            "account": true,
+            "sites": true,
+            "tablesDB": true
+        }
+    },
+    "sites": [
+        {
+            "$id": "dashboard",
+            "name": "Work Tracker Dashboard",
+            "enabled": true,
+            "logging": true,
+            "framework": "static",
+            "adapter": "static",
+            "fallbackFile": "index.html",
+            "buildRuntime": "node-22",
+            "buildSpecification": "s-1vcpu-512mb",
+            "installCommand": "npm install",
+            "buildCommand": "npm run build",
+            "outputDirectory": "./dist",
+            "deploymentRetention": 7,
+            "path": "web"
+        }
+    ]
 }
