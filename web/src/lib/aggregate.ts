@@ -5,6 +5,7 @@ import type {
   HourlyHeatmap,
   AggregatedFile,
 } from "../types";
+import { getTzOffsetMs } from "./timezone";
 
 export function aggregateByDay(hbs: Heartbeat[]): AggregatedDay[] {
   const map = new Map<string, number>();
@@ -140,35 +141,56 @@ export function computeStreak(byDay: AggregatedDay[]): number {
   return streak;
 }
 
-export function getRangeStart(range: string, customStart?: string): Date {
-  const now = new Date();
-  if (range === "today") {
-    const start = new Date(now);
-    start.setHours(0, 0, 0, 0);
-    return start;
-  }
-  if (range === "custom" && customStart) {
-    return new Date(customStart + "T00:00:00");
-  }
-  const days = range === "7d" ? 7 : range === "90d" ? 90 : 30;
-  const start = new Date(now);
-  start.setDate(start.getDate() - days);
-  return start;
-}
-
-export function getTodayStartISO(): string {
+export function getTodayStartUtcMs(timezone?: string): number {
   const d = new Date();
+  if (timezone) {
+    const dateStr = d.toLocaleDateString("en-CA", { timeZone: timezone });
+    const [y, m, day] = dateStr.split("-").map(Number);
+    const offsetMs = getTzOffsetMs(d, timezone);
+    return Date.UTC(y, m - 1, day) - offsetMs;
+  }
   d.setHours(0, 0, 0, 0);
-  return d.toISOString();
+  return d.getTime();
 }
 
-export function getWeekStartISO(): string {
+export function getWeekStartUtcMs(timezone?: string): number {
   const d = new Date();
+  if (timezone) {
+    const dateStr = d.toLocaleDateString("en-CA", { timeZone: timezone });
+    const [y, m, day] = dateStr.split("-").map(Number);
+    const offsetMs = getTzOffsetMs(d, timezone);
+    const localMidnight = Date.UTC(y, m - 1, day) - offsetMs;
+    const dow = new Date(localMidnight).getUTCDay();
+    const diff = (dow + 6) % 7;
+    return localMidnight - diff * 86400000;
+  }
   const day = d.getDay();
   const diff = (day + 6) % 7;
   d.setDate(d.getDate() - diff);
   d.setHours(0, 0, 0, 0);
-  return d.toISOString();
+  return d.getTime();
+}
+
+export function getTodayStartISO(timezone?: string): string {
+  return new Date(getTodayStartUtcMs(timezone)).toISOString();
+}
+
+export function getWeekStartISO(timezone?: string): string {
+  return new Date(getWeekStartUtcMs(timezone)).toISOString();
+}
+
+export function getRangeStart(range: string, customStart?: string, timezone?: string): Date {
+  if (range === "today") {
+    return new Date(getTodayStartUtcMs(timezone));
+  }
+  if (range === "custom" && customStart) {
+    return new Date(customStart + "T00:00:00");
+  }
+  const now = new Date();
+  const days = range === "7d" ? 7 : range === "90d" ? 90 : 30;
+  const start = new Date(now);
+  start.setDate(start.getDate() - days);
+  return start;
 }
 
 function parseList(s: string | undefined): string[] {
@@ -197,9 +219,10 @@ export function computeGoalProgress(
     projects?: string;
     isEnabled?: boolean;
   },
-  hbs: Heartbeat[]
+  hbs: Heartbeat[],
+  timezone?: string
 ): GoalProgress {
-  const windowStartISO = goal.delta === "day" ? getTodayStartISO() : getWeekStartISO();
+  const windowStartISO = goal.delta === "day" ? getTodayStartISO(timezone) : getWeekStartISO(timezone);
   const windowStart = new Date(windowStartISO).getTime();
   const langs = parseList(goal.languages);
   const projs = parseList(goal.projects);

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { signUp } from "../lib/auth";
 import { Link } from "react-router-dom";
+import { signUp } from "../lib/auth";
 import type { Models } from "appwrite";
 
 export default function Signup({
@@ -82,7 +82,7 @@ export default function Signup({
           </button>
           <p className="text-center text-sm text-gray-500">
             Already have an account?{" "}
-            <Link to="/" className="text-brand hover:underline">
+            <Link to="/login" className="text-brand hover:underline">
               Sign in
             </Link>
           </p>

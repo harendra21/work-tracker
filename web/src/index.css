@@ -181,6 +181,7 @@
 
 .animate-ring-hit {
   animation: ringHit 0.6s ease-out;
+  overflow: visible;
 }
 
 @media (max-width: 768px) {

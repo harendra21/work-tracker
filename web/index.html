@@ -3,23 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Work Tracker Dashboard</title>
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏱️</text></svg>"
-    />
+    <title>Work Tracker — Automatic Coding Time Tracker for VS Code</title>
+    <meta name="description" content="Work Tracker is a free, privacy-first VS Code extension that automatically tracks your coding time. See per-project, per-language breakdowns, goals, streaks, and insights on a beautiful web dashboard." />
+    <meta name="keywords" content="coding time tracker, VS Code extension, wakatime alternative, productivity, coding stats, time tracking, developer tools, open source" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://work-tracker.appwrite.network" />
+    <meta property="og:title" content="Work Tracker — Automatic Coding Time Tracker for VS Code" />
+    <meta property="og:description" content="Free, privacy-first coding time tracker with beautiful dashboard, goals, streaks, and insights. A WakaTime alternative built on Appwrite." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://work-tracker.appwrite.network" />
+    <meta property="og:image" content="https://work-tracker.appwrite.network/banner.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Work Tracker — Automatic Coding Time Tracker for VS Code" />
+    <meta name="twitter:description" content="Free, privacy-first coding time tracker with beautiful dashboard, goals, streaks, and insights." />
+    <meta name="twitter:image" content="https://work-tracker.appwrite.network/banner.png" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏱️</text></svg>" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Work Tracker",
+      "operatingSystem": "macOS, Windows, Linux",
+      "applicationCategory": "DeveloperApplication",
+      "description": "Automatic daily coding time tracker for VS Code with a beautiful web dashboard, goals, and streaks.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "harendra21"
+      }
+    }
+    </script>
   </head>
   <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
     <div id="root"></div>
     <script>
-      // Apply theme before React mounts to avoid flash
       (function () {
         try {
           var t = localStorage.getItem("wt-theme") || "system";
-          var dark =
-            t === "dark" ||
-            (t === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+          var dark = t === "dark" || (t === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
           if (dark) document.documentElement.classList.add("dark");
         } catch (e) {}
       })();

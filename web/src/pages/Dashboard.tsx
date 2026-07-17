@@ -25,8 +25,10 @@ import Insights from "../components/Insights";
 import Timeline from "../components/Timeline";
 import WeekStrip from "../components/WeekStrip";
 import ProductivityRing from "../components/ProductivityRing";
+import DayOfWeekChart from "../components/DayOfWeekChart";
 import { computeFocusScore, computeProductivityScore, generateInsights } from "../lib/insights";
 import { Skeleton, SkeletonRings, SkeletonChart, SkeletonTable } from "../components/Skeleton";
+import { getUserTimezone } from "../lib/timezone";
 import { useNavigate } from "react-router-dom";
 
 function getGreeting(): string {
@@ -48,13 +50,15 @@ function getGreetingEmoji(): string {
 export default function Dashboard({ user }: { user: Models.User<Models.Preferences> }) {
   const navigate = useNavigate();
   const [range, setRange] = useState<Range>("today");
+
   const [hbs, setHbs] = useState<Heartbeat[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const tz = getUserTimezone(user);
 
   useEffect(() => {
     setLoading(true);
-    const since = getRangeStart(range);
+    const since = getRangeStart(range, undefined, tz);
     Promise.all([fetchHeartbeats(user.$id, since.toISOString()), fetchProjects(user.$id)])
       .then(([h, p]) => {
         setHbs(h);
@@ -338,6 +342,14 @@ export default function Dashboard({ user }: { user: Models.User<Models.Preferenc
                 onCellClick={(day, hour) => navigate(`/reports?dayOfWeek=${day}&hour=${hour}`)}
               />
             </div>
+          </div>
+
+          {/* Day of week breakdown */}
+          <div className="card p-4 animate-slide-up" style={{ animationDelay: "225ms" }}>
+            <h3 className="text-sm font-semibold mb-4 text-gray-600 dark:text-gray-300">
+              📅 Day of week breakdown
+            </h3>
+            {hbs.length > 0 ? <DayOfWeekChart hbs={hbs} /> : <p className="text-sm text-gray-400">No data for this period.</p>}
           </div>
         </>
       )}

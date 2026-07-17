@@ -5,7 +5,7 @@ import ThemeToggle from "./ThemeToggle";
 import OnboardingWizard from "./OnboardingWizard";
 
 const NAV = [
-  { to: "/", label: "Dashboard", icon: "📊" },
+  { to: "/dashboard", label: "Dashboard", icon: "📊" },
   { to: "/reports", label: "Reports", icon: "📋" },
   { to: "/goals", label: "Goals", icon: "🎯" },
   { to: "/settings", label: "Settings", icon: "⚙️" },

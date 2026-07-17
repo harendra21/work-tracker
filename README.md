@@ -35,10 +35,16 @@ A privacy-respecting WakaTime alternative built on [Appwrite](https://appwrite.i
 ### 🎯 Goals & streaks
 
 - Daily and weekly time goals (e.g. "Code 2 hours every day")
-- Per-language and per-project goal filters
+- Per-language and per-project goal filters (comma-separated or dropdown picker)
 - Live progress ring with color-coded status (red → amber → green)
-- 🎉 celebration when a goal is hit
+- 🎉 celebration when a goal is hit — pulsing glow animation
 - Streak tracking across the dashboard
+
+### 🌍 Timezone-aware
+
+- Set your timezone in dashboard **Settings** (35 IANA timezones, searchable)
+- Goals, daily/weekly windows, and report dates respect your timezone
+- Works with `Intl` browser APIs — no extra dependencies
 
 ### 🔐 Privacy-first
 
@@ -84,13 +90,24 @@ Open any file. The status bar will show today's coding time. Visit the dashboard
 
 ---
 
-## 📸 Dashboard preview
+## 📸 Screenshots
+
+<p align="center">
+  <img src="media/dashboard.png" alt="Dashboard — focus score, productivity, trends, heatmap" width="45%">
+  <img src="media/reports.png" alt="Reports — per-day breakdowns with filters" width="45%">
+</p>
+
+<p align="center">
+  <img src="media/goals.png" alt="Goals — live progress rings, language/project filters" width="45%">
+  <img src="media/dashboard2.png" alt="Dashboard — donut charts, file leaderboard" width="45%">
+</p>
 
 The web dashboard lives at [work-tracker.appwrite.network](https://work-tracker.appwrite.network) and includes:
 
 - **Hero header** with personalized greeting and live period total
 - **Focus Score** ring (longest uninterrupted session)
 - **Productivity Score** ring (consistency + focus + volume)
+- **Day of week breakdown** — see which days you code most
 - **Insights** auto-generated from your data
 - **Donut charts** for projects and languages (click to filter Reports)
 - **Trend chart** (click a day to jump into Reports)
@@ -99,7 +116,7 @@ The web dashboard lives at [work-tracker.appwrite.network](https://work-tracker.
 
 The **Reports** page offers detailed per-day breakdowns, top projects with medals 🥇🥈🥉, editing pattern stats (longest session, peak hour, write ratio, active days), and 5 advanced insights.
 
-The **Goals** page shows live progress rings for each goal with live ticking every minute.
+The **Goals** page shows live progress rings for each goal with live ticking every minute, with per-language and per-project goal filters, and a timezone-aware daily/weekly window.
 
 ---
 
@@ -221,6 +238,3 @@ Issues and PRs welcome at [github.com/harendra21/work-tracker](https://github.co
 ## 📄 License
 
 [MIT](LICENSE)
-
-
-npm run package && npx vsce publish

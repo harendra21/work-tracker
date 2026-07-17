@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { signIn } from "../lib/auth";
 import { Link } from "react-router-dom";
+import { signIn } from "../lib/auth";
 import type { Models } from "appwrite";
 
 export default function Login({

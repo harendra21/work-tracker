@@ -57,11 +57,11 @@ export default function GoalProgressRing({
 
   return (
     <div
-      className="relative inline-flex items-center justify-center shrink-0"
+      className="relative inline-flex items-center justify-center shrink-0 overflow-visible"
       style={{ width: size, height: size }}
       aria-label={`${Math.round(percent)}% of ${formatDuration(targetSeconds)} goal ${isHit ? "achieved" : "achieved so far"}`}
     >
-      <svg width={size} height={size} className="-rotate-90">
+      <svg width={size} height={size} className="-rotate-90 overflow-visible">
         <circle
           cx={size / 2}
           cy={size / 2}

@@ -7,6 +7,7 @@ import { formatDuration, shortFilePath } from "../lib/format";
 import { getReportsInsights } from "../lib/reportsInsights";
 import RangePicker from "../components/RangePicker";
 import { Skeleton } from "../components/Skeleton";
+import { getUserTimezone } from "../lib/timezone";
 import { useSearchParams } from "react-router-dom";
 
 function formatTime(iso: string): string {
@@ -89,8 +90,10 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
   const [range, setRange] = useState<Range>("30d");
   const [hbs, setHbs] = useState<Heartbeat[]>([]);
   const [loading, setLoading] = useState(true);
+  const tz = getUserTimezone(user);
   const [filterProject, setFilterProject] = useState("");
   const [filterLang, setFilterLang] = useState("");
+
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -112,7 +115,7 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
 
   useEffect(() => {
     setLoading(true);
-    const since = getRangeStart(range);
+    const since = getRangeStart(range, undefined, tz);
     fetchHeartbeats(user.$id, since.toISOString())
       .then(setHbs)
       .catch(() => setHbs([]))
@@ -520,6 +523,8 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
           ))}
         </div>
       )}
+
+
 
       {loading ? (
         <div className="space-y-3 animate-fade-in">
