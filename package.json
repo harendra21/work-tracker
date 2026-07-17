@@ -1,0 +1,183 @@
+{
+  "version": "0.1.0",
+  "publisher": "harendra21",
+  "name": "work-tracker",
+  "displayName": "Work Tracker",
+  "description": "Automatic daily coding time tracker. See your time per project, language, and day with a beautiful web dashboard, goals, and streaks — powered by Appwrite.",
+  "keywords": [
+    "time-tracking",
+    "productivity",
+    "coding-stats",
+    "wakatime",
+    "appwrite",
+    "dashboard",
+    "goals",
+    "streak",
+    "metrics"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/harendra21/work-tracker",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harendra21/work-tracker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/harendra21/work-tracker/issues"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Time Management",
+    "Productivity"
+  ],
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#5C9EAD",
+    "theme": "dark"
+  },
+  "main": "out/extension.js",
+  "activationEvents": [
+    "*"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "workTracker.setupApiKey",
+        "title": "Setup API Key",
+        "category": "Work Tracker"
+      },
+      {
+        "command": "workTracker.dashboard",
+        "title": "Open Dashboard",
+        "category": "Work Tracker"
+      },
+      {
+        "command": "workTracker.goals",
+        "title": "Open Goals",
+        "category": "Work Tracker"
+      },
+      {
+        "command": "workTracker.toggleTracking",
+        "title": "Toggle Tracking",
+        "category": "Work Tracker"
+      },
+      {
+        "command": "workTracker.flushNow",
+        "title": "Flush Heartbeats Now",
+        "category": "Work Tracker"
+      },
+      {
+        "command": "workTracker.status",
+        "title": "Show Status",
+        "category": "Work Tracker"
+      }
+    ],
+    "configuration": {
+      "title": "Work Tracker",
+      "properties": {
+        "workTracker.appwriteEndpoint": {
+          "type": "string",
+          "default": "https://cloud.appwrite.io/v1",
+          "description": "Appwrite API endpoint URL."
+        },
+        "workTracker.appwriteProjectId": {
+          "type": "string",
+          "default": "",
+          "description": "Appwrite project ID."
+        },
+        "workTracker.appwriteApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Appwrite API key with databases + tables scopes."
+        },
+        "workTracker.appwriteUserId": {
+          "type": "string",
+          "default": "",
+          "description": "Your Appwrite User ID (found in Console → Auth → Users)."
+        },
+        "workTracker.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Generated API key from the web dashboard. Used to identify your account."
+        },
+        "workTracker.trackingEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Global kill switch. When false, no heartbeats are recorded."
+        },
+        "workTracker.heartbeatIntervalSeconds": {
+          "type": "number",
+          "default": 300,
+          "minimum": 30,
+          "description": "How often (in seconds) to flush queued heartbeats to the server."
+        },
+        "workTracker.keystrokeTimeoutMinutes": {
+          "type": "number",
+          "default": 15,
+          "minimum": 1,
+          "description": "Idle gap (in minutes) used to join heartbeats into durations."
+        },
+        "workTracker.excludePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Regex patterns. Files whose path matches any pattern are never tracked."
+        },
+        "workTracker.statusBarEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show today's coding time in the status bar."
+        },
+        "workTracker.showLinesChanged": {
+          "type": "boolean",
+          "default": true,
+          "description": "Track lines added and removed per file."
+        },
+        "workTracker.hideProjectFolder": {
+          "type": "boolean",
+          "default": false,
+          "description": "Send only the relative path inside the project (e.g. 'src/main.ts')."
+        },
+        "workTracker.debug": {
+          "type": "boolean",
+          "default": false,
+          "description": "Verbose logging to the Work Tracker output channel."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.config.js --production",
+    "watch": "node esbuild.config.js --watch",
+    "package": "npm run build && vsce package",
+    "lint": "eslint src test --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "appwrite:setup": "pwsh ./appwrite/setup.ps1",
+    "appwrite:smoke": "node ./appwrite/smoke-test.js",
+    "appwrite:e2e": "node ./appwrite/e2e.js"
+  },
+  "dependencies": {
+    "appwrite": "^23.0.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^20.14.0",
+    "@types/uuid": "^10.0.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "esbuild": "^0.23.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0",
+    "vsce": "^2.15.0"
+  }
+}
