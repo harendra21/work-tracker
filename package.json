@@ -28,9 +28,7 @@
     "vscode": "^1.85.0"
   },
   "categories": [
-    "Other",
-    "Time Management",
-    "Productivity"
+    "Other"
   ],
   "icon": "media/icon.png",
   "galleryBanner": {
