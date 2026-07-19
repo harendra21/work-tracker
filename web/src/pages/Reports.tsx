@@ -87,12 +87,21 @@ function topProjects(hbs: Heartbeat[], n = 3): ProjectStat[] {
 }
 
 export default function Reports({ user }: { user: Models.User<Models.Preferences> }) {
-  const [range, setRange] = useState<Range>("30d");
+  const [range, setRangeState] = useState<Range>(() => {
+    const saved = localStorage.getItem("wt_range_reports");
+    return (saved === "today" || saved === "7d" || saved === "30d" || saved === "90d" || saved === "custom" ? saved : "30d") as Range;
+  });
+  const setRange = (r: Range) => {
+    setRangeState(r);
+    localStorage.setItem("wt_range_reports", r);
+  };
   const [hbs, setHbs] = useState<Heartbeat[]>([]);
   const [loading, setLoading] = useState(true);
   const tz = getUserTimezone(user);
   const [filterProject, setFilterProject] = useState("");
   const [filterLang, setFilterLang] = useState("");
+  const [customStart, setCustomStart] = useState(() => localStorage.getItem("wt_custom_start") || "");
+  const [customEnd, setCustomEnd] = useState(() => localStorage.getItem("wt_custom_end") || "");
 
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [searchParams, setSearchParams] = useSearchParams();
@@ -115,12 +124,19 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
 
   useEffect(() => {
     setLoading(true);
-    const since = getRangeStart(range, undefined, tz);
+    const since = getRangeStart(range, customStart || undefined, tz);
     fetchHeartbeats(user.$id, since.toISOString())
-      .then(setHbs)
+      .then((rows) => {
+        let filtered = rows;
+        if (range === "custom" && customEnd) {
+          const end = new Date(customEnd + "T23:59:59.999Z").getTime();
+          filtered = rows.filter((h) => new Date(h.timestamp).getTime() <= end);
+        }
+        setHbs(filtered);
+      })
       .catch(() => setHbs([]))
       .finally(() => setLoading(false));
-  }, [user.$id, range]);
+  }, [user.$id, range, customStart, customEnd]);
 
   const projects = useMemo(() => [...new Set(hbs.map((h) => h.projectName))].sort(), [hbs]);
   const languages = useMemo(() => [...new Set(hbs.map((h) => h.language))].sort(), [hbs]);
@@ -270,7 +286,7 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
 
       {/* Range picker */}
       <div className="flex justify-end">
-        <RangePicker value={range} onChange={setRange} />
+        <RangePicker value={range} onChange={setRange} customStart={customStart} customEnd={customEnd} onCustomStartChange={(d) => { setCustomStart(d); localStorage.setItem("wt_custom_start", d); }} onCustomEndChange={(d) => { setCustomEnd(d); localStorage.setItem("wt_custom_end", d); }} />
       </div>
 
       {/* Key insights row */}

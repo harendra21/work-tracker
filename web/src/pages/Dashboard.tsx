@@ -49,7 +49,14 @@ function getGreetingEmoji(): string {
 
 export default function Dashboard({ user }: { user: Models.User<Models.Preferences> }) {
   const navigate = useNavigate();
-  const [range, setRange] = useState<Range>("today");
+  const [range, setRangeState] = useState<Range>(() => {
+    const saved = localStorage.getItem("wt_range_dashboard");
+    return (saved === "today" || saved === "7d" || saved === "30d" || saved === "90d" ? saved : "7d") as Range;
+  });
+  const setRange = (r: Range) => {
+    setRangeState(r);
+    localStorage.setItem("wt_range_dashboard", r);
+  };
 
   const [hbs, setHbs] = useState<Heartbeat[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
