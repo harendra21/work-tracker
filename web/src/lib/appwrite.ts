@@ -1,4 +1,5 @@
 import { Client, Account, TablesDB } from "appwrite";
+export { ID } from "appwrite";
 
 const endpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1";
 const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID || "work-tracker";

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { signUp } from "../lib/auth";
+import { signUp, resendVerification } from "../lib/auth";
 import type { Models } from "appwrite";
 
 export default function Signup({
@@ -13,20 +13,48 @@ export default function Signup({
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      const user = await signUp(email, password, name);
-      onAuth(user);
+      await signUp(email, password, name);
+      setDone(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign up failed");
     } finally {
       setLoading(false);
     }
   };
+
+  const handleResend = async () => {
+    try {
+      await resendVerification();
+      alert("Verification email sent! Check your inbox.");
+    } catch {
+      alert("Failed to resend. Try again later.");
+    }
+  };
+
+  if (done) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+        <div className="w-full max-w-sm text-center bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 p-6">
+          <div className="text-4xl mb-2">📧</div>
+          <p className="font-semibold mb-1">Check your email</p>
+          <p className="text-sm text-gray-500 mb-4">
+            We sent a verification link to <strong>{email}</strong>. Click it to activate your account.
+          </p>
+          <button onClick={handleResend} className="btn-primary mb-3">Resend Email</button>
+          <p className="text-xs text-gray-400">
+            <Link to="/login" className="text-brand hover:underline">Back to sign in</Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">

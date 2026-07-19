@@ -7,6 +7,9 @@ import Home from "./pages/Home";
 import Extension from "./pages/Extension";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import VerifyEmail from "./pages/VerifyEmail";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Reports from "./pages/Reports";
 import Goals from "./pages/Goals";
@@ -43,6 +46,9 @@ export default function App() {
         <Route path="/extension" element={<Extension />} />
         <Route path="/login" element={<Login onAuth={onAuth} />} />
         <Route path="/signup" element={<Signup onAuth={onAuth} />} />
+        <Route path="/verify" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<Home />} />
       </Routes>
     );
@@ -52,6 +58,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/extension" element={<Extension />} />
+      <Route path="/verify" element={<VerifyEmail />} />
       <Route
         path="/dashboard"
         element={

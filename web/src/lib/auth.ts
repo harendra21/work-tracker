@@ -1,28 +1,42 @@
-import { account } from "./appwrite";
+import { account, ID } from "./appwrite";
 import type { Models } from "appwrite";
 
 let currentUser: Models.User<Models.Preferences> | null = null;
 
 export async function signUp(email: string, password: string, name: string) {
-  await account.create("unique()", email, password, name);
-  return signIn(email, password);
+  await account.create({ userId: ID.unique(), email, password, name });
+  await account.createEmailPasswordSession({ email, password });
+  currentUser = await account.get();
+  const origin = window.location.origin;
+  await account.createVerification({ url: `${origin}/verify` });
+}
+
+export async function resendVerification() {
+  const origin = window.location.origin;
+  await account.createVerification({ url: `${origin}/verify` });
+}
+
+export async function verifyEmail(userId: string, secret: string) {
+  await account.updateVerification({ userId, secret });
+}
+
+export async function sendPasswordRecovery(email: string) {
+  const origin = window.location.origin;
+  await account.createRecovery({ email, url: `${origin}/reset-password` });
+}
+
+export async function resetPassword(userId: string, secret: string, password: string) {
+  await account.updateRecovery({ userId, secret, password });
 }
 
 export async function signIn(email: string, password: string) {
-  try {
-    const existing = await account.get();
-    currentUser = existing;
-    return existing;
-  } catch {
-    // No session — create one
-  }
-  await account.createEmailPasswordSession(email, password);
+  await account.createEmailPasswordSession({ email, password });
   currentUser = await account.get();
   return currentUser;
 }
 
 export async function signOut() {
-  await account.deleteSession("current");
+  await account.deleteSession({ sessionId: "current" });
   currentUser = null;
 }
 

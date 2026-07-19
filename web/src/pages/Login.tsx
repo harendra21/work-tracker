@@ -19,9 +19,15 @@ export default function Login({
     setLoading(true);
     try {
       const user = await signIn(email, password);
+      if (!user.emailVerification) {
+        setError("Please verify your email before signing in. Check your inbox for the verification link.");
+        setLoading(false);
+        return;
+      }
       onAuth(user);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign in failed");
+      const msg = err instanceof Error ? err.message : "Sign in failed";
+      setError(msg.includes("verification") ? "Please verify your email first. Check your inbox." : msg);
     } finally {
       setLoading(false);
     }
@@ -60,6 +66,11 @@ export default function Login({
               required
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
             />
+          </div>
+          <div className="text-right">
+            <Link to="/forgot-password" className="text-xs text-brand hover:underline">
+              Forgot password?
+            </Link>
           </div>
           <button
             type="submit"

@@ -7,7 +7,7 @@
         "services": {
             "account": true,
             "sites": true,
-            "tablesDB": true
+            "tablesdb": true
         }
     },
     "sites": [
