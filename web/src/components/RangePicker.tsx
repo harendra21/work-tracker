@@ -1,5 +1,7 @@
 import type { Range } from "../types";
 
+const today = new Date().toISOString().slice(0, 10);
+
 const RANGES: { value: Range; label: string }[] = [
   { value: "today", label: "Today" },
   { value: "7d", label: "7 days" },
@@ -46,6 +48,7 @@ export default function RangePicker({
             type="date"
             value={customStart ?? ""}
             onChange={(e) => onCustomStartChange?.(e.target.value)}
+            max={today}
             className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
           />
           <span className="text-xs text-gray-400">—</span>
@@ -53,6 +56,7 @@ export default function RangePicker({
             type="date"
             value={customEnd ?? ""}
             onChange={(e) => onCustomEndChange?.(e.target.value)}
+            max={today}
             className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
           />
         </div>
