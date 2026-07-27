@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Models } from "appwrite";
 import { fetchGoals, createGoal, deleteGoal, updateGoal, fetchHeartbeats, fetchProjects } from "../lib/data";
 import { computeGoalProgress, getWeekStartISO } from "../lib/aggregate";
@@ -28,20 +29,22 @@ const PRESET_HOURS = [1, 2, 4, 6, 8];
 
 function Toggle({ enabled, onToggle }: { enabled: boolean; onToggle: () => void }) {
   return (
-    <button
+    <motion.button
       onClick={onToggle}
-      className={`relative w-9 h-5 rounded-full transition-all flex items-center ${
+      className={`relative w-9 h-5 rounded-full flex items-center ${
         enabled ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-600"
       }`}
       title={enabled ? "Pause" : "Resume"}
       aria-label={enabled ? "Pause goal" : "Resume goal"}
+      whileTap={{ scale: 0.9 }}
+      transition={{ type: "spring", stiffness: 400 }}
     >
-      <span
-        className={`block w-3.5 h-3.5 rounded-full bg-white shadow transition-transform duration-200 ${
-          enabled ? "translate-x-[19px]" : "translate-x-[2px]"
-        }`}
+      <motion.span
+        className="block w-3.5 h-3.5 rounded-full bg-white shadow"
+        animate={{ x: enabled ? 19 : 2 }}
+        transition={{ type: "spring", stiffness: 500, damping: 25 }}
       />
-    </button>
+    </motion.button>
   );
 }
 
@@ -188,8 +191,16 @@ export default function Goals({ user }: { user: Models.User<Models.Preferences> 
   }, [goals, hbs, wasHitMap, filterKeyword]);
 
   return (
-    <div className="space-y-6 max-w-3xl mx-auto">
-      <div className="flex items-center justify-between animate-fade-in">
+    <motion.div
+      className="space-y-6 max-w-3xl mx-auto"
+      initial="hidden"
+      animate="visible"
+      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } } as const}
+    >
+      <motion.div
+        className="flex items-center justify-between"
+        variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 200, damping: 20 } } }}
+      >
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <span>🎯</span> Goals
@@ -198,16 +209,25 @@ export default function Goals({ user }: { user: Models.User<Models.Preferences> 
             Set coding time targets and watch your progress live.
           </p>
         </div>
-        <button
+        <motion.button
           onClick={() => setShowForm((v) => !v)}
           className="btn-primary text-sm"
+          whileTap={{ scale: 0.95 }}
         >
           {showForm ? "Cancel" : "+ New Goal"}
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
-      {showForm && (
-        <form onSubmit={handleAdd} className="card p-5 space-y-4 animate-slide-up">
+      <AnimatePresence>
+        {showForm && (
+          <motion.form
+            onSubmit={handleAdd}
+            className="card p-5 space-y-4"
+            initial={{ opacity: 0, height: 0, y: -10 }}
+            animate={{ opacity: 1, height: "auto", y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -10 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          >
           <div>
             <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">
               Goal name
@@ -352,14 +372,23 @@ export default function Goals({ user }: { user: Models.User<Models.Preferences> 
             </div>
           </div>
 
-          <button type="submit" disabled={adding || !title.trim()} className="btn-primary w-full">
+          <motion.button
+            type="submit"
+            disabled={adding || !title.trim()}
+            className="btn-primary w-full"
+            whileTap={{ scale: 0.95 }}
+          >
             {adding ? "Adding..." : "+ Add Goal"}
-          </button>
-        </form>
+          </motion.button>
+        </motion.form>
       )}
+      </AnimatePresence>
 
       {goals.length > 0 && (
-        <div className="flex items-center gap-2 animate-fade-in">
+        <motion.div
+          className="flex items-center gap-2"
+          variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 200, damping: 20 } } }}
+        >
           <input
             value={filterKeyword}
             onChange={(e) => setFilterKeyword(e.target.value)}
@@ -367,42 +396,56 @@ export default function Goals({ user }: { user: Models.User<Models.Preferences> 
             className="input flex-1"
           />
           {filterKeyword && (
-            <button
+            <motion.button
               onClick={() => setFilterKeyword("")}
               className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 shrink-0"
+              whileHover={{ x: 2 }}
+              transition={{ type: "spring", stiffness: 400 }}
             >
               Clear
-            </button>
+            </motion.button>
           )}
-        </div>
+        </motion.div>
       )}
 
       {loading ? (
-        <div className="space-y-3 animate-fade-in">
+        <motion.div
+          className="space-y-3"
+          variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 200, damping: 20 } } }}
+        >
           <SkeletonGoal />
           <SkeletonGoal />
-        </div>
+        </motion.div>
       ) : goalCards.length === 0 ? (
-        <div className="card p-10 text-center animate-fade-in">
+        <motion.div
+          className="card p-10 text-center"
+          variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 200, damping: 20 } } }}
+        >
           <div className="text-5xl mb-3">🎯</div>
           <p className="text-gray-500 dark:text-gray-400 mb-1">No goals yet</p>
           <p className="text-sm text-gray-400 dark:text-gray-500">
             Click <strong>+ New Goal</strong> to create your first coding target.
           </p>
-        </div>
+        </motion.div>
       ) : (
-        <div className="space-y-3">
+        <motion.div
+          className="space-y-3"
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } } as const}
+        >
           {goalCards.map(({ goal: g, progress, color, langs, projs, justHit }) => {
             const isPaused = !g.isEnabled;
             return (
-              <div
+              <motion.div
                 key={g.$id}
-                className={`card p-5 transition-all animate-slide-up ${
-                  justHit ? "ring-2 ring-emerald-400/50" : "hover:shadow-md"
-                }`}
+                className={`card p-5 transition-all ${justHit ? "ring-2 ring-emerald-400/50" : "hover:shadow-md"}`}
+                variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 200, damping: 20 } } }}
               >
                 <div className="flex items-start gap-4 sm:gap-6">
-                  <div className={`shrink-0 ${justHit ? "animate-ring-hit" : ""}`}>
+                  <motion.div
+                    className="shrink-0"
+                    animate={justHit ? { scale: [1, 1.08, 1] } : {}}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                  >
                     <GoalProgressRing
                       percent={progress.percent}
                       color={color}
@@ -414,7 +457,7 @@ export default function Goals({ user }: { user: Models.User<Models.Preferences> 
                       isPaused={isPaused}
                       windowLabel={progress.windowLabel}
                     />
-                  </div>
+                  </motion.div>
 
                   <div className="flex-1 min-w-0 pt-1 overflow-hidden">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -442,10 +485,12 @@ export default function Goals({ user }: { user: Models.User<Models.Preferences> 
                         {Math.round(progress.percent)}%
                       </span>
                       <div className="flex-1 h-2.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden min-w-[80px] max-w-[240px]">
-                        <div
-                          className="h-full rounded-full transition-all duration-1000 ease-out"
+                        <motion.div
+                          className="h-full rounded-full"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${Math.min(progress.percent, 100)}%` }}
+                          transition={{ type: "spring", stiffness: 60, damping: 18 }}
                           style={{
-                            width: `${Math.min(progress.percent, 100)}%`,
                             backgroundColor: isPaused ? "#9CA3AF" : color,
                             opacity: isPaused ? 0.5 : 1,
                           }}
@@ -486,24 +531,26 @@ export default function Goals({ user }: { user: Models.User<Models.Preferences> 
 
                   <div className="flex flex-col items-center gap-3 pt-1 shrink-0">
                     <Toggle enabled={g.isEnabled} onToggle={() => handleToggle(g)} />
-                    <button
+                    <motion.button
                       onClick={() => handleDelete(g.$id)}
                       className="w-7 h-7 inline-flex items-center justify-center rounded text-gray-400 hover:text-danger hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                       title="Delete goal"
                       aria-label="Delete goal"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="3 6 5 6 21 6" />
                         <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                       </svg>
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

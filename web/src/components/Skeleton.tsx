@@ -1,12 +1,15 @@
+import { motion } from "framer-motion";
+
 interface SkeletonProps {
   className?: string;
 }
 
 export function Skeleton({ className = "" }: SkeletonProps) {
   return (
-    <div
-      className={`animate-pulse bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 bg-[length:200%_100%] rounded ${className}`}
-      style={{ animation: "shimmer 1.8s linear infinite" }}
+    <motion.div
+      className={`bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 bg-[length:200%_100%] rounded ${className}`}
+      animate={{ backgroundPosition: ["-200% 0", "200% 0"] }}
+      transition={{ repeat: Infinity, duration: 1.8, ease: "linear" }}
     />
   );
 }

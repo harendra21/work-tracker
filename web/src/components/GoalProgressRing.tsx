@@ -1,21 +1,18 @@
+import { motion, useSpring, useMotionValue } from "framer-motion";
 import { useEffect, useState } from "react";
 import { formatDuration } from "../lib/format";
 
-function useAnimatedNumber(target: number, duration = 800): number {
+function useAnimatedNumber(target: number): number {
+  const motionValue = useMotionValue(0);
+  const spring = useSpring(motionValue, { stiffness: 60, damping: 18 });
   const [value, setValue] = useState(0);
   useEffect(() => {
-    const start = performance.now();
-    let raf = 0;
-    const tick = (now: number) => {
-      const elapsed = now - start;
-      const progress = Math.min(1, elapsed / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(target * eased);
-      if (progress < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [target, duration]);
+    const unsubscribe = spring.on("change", setValue);
+    return unsubscribe;
+  }, [spring]);
+  useEffect(() => {
+    motionValue.set(target);
+  }, [target, motionValue]);
   return value;
 }
 
@@ -71,7 +68,7 @@ export default function GoalProgressRing({
           strokeWidth={strokeWidth}
           className="text-gray-200 dark:text-gray-700"
         />
-        <circle
+        <motion.circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
@@ -79,13 +76,16 @@ export default function GoalProgressRing({
           stroke={isPaused ? "#9CA3AF" : color}
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
-          strokeDashoffset={offset}
           strokeLinecap="round"
-          className={isHit && !isPaused ? "animate-ring-pulse" : undefined}
-          style={{
-            transition: "stroke-dashoffset 1s ease-out",
-            filter: isHit && !isPaused ? `drop-shadow(0 0 6px ${color}80)` : undefined,
+          animate={{
+            strokeDashoffset: offset,
             opacity: isPaused ? 0.5 : 1,
+            filter: isHit && !isPaused ? `drop-shadow(0 0 6px ${color}80)` : "drop-shadow(0 0 0px transparent)",
+          }}
+          transition={{
+            strokeDashoffset: { type: "spring", stiffness: 80, damping: 18 },
+            opacity: { duration: 0.3 },
+            filter: { duration: 0.3 },
           }}
         />
       </svg>

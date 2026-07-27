@@ -1,20 +1,17 @@
+import { motion, useSpring, useMotionValue } from "framer-motion";
 import { useEffect, useState } from "react";
 
-function useAnimatedNumber(target: number, duration = 600) {
+function useAnimatedNumber(target: number) {
+  const motionValue = useMotionValue(0);
+  const spring = useSpring(motionValue, { stiffness: 80, damping: 15 });
   const [value, setValue] = useState(0);
   useEffect(() => {
-    const start = performance.now();
-    let raf = 0;
-    const tick = (now: number) => {
-      const elapsed = now - start;
-      const progress = Math.min(1, elapsed / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(target * eased);
-      if (progress < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [target, duration]);
+    const unsubscribe = spring.on("change", setValue);
+    return unsubscribe;
+  }, [spring]);
+  useEffect(() => {
+    motionValue.set(target);
+  }, [target, motionValue]);
   return value;
 }
 
@@ -58,29 +55,40 @@ export default function StatCard({
       : Math.round(animated) + suffix
     : value;
   return (
-    <div className="card card-hover p-4 relative overflow-hidden group">
+    <motion.div
+      className="card card-hover p-4 relative overflow-hidden group"
+      whileHover={{ y: -3 }}
+      transition={{ type: "spring", stiffness: 300, damping: 15 }}
+    >
       {gradient && (
-        <div
-          className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${gradient}`}
+        <motion.div
+          className={`absolute inset-0 ${gradient}`}
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
         />
       )}
       <div className="relative">
         <div className="flex items-center gap-2 mb-2">
           {icon && (
-            <span className="text-base opacity-70 group-hover:scale-110 transition-transform duration-300">
+            <motion.span
+              className="text-base opacity-70"
+              whileHover={{ scale: 1.2 }}
+              transition={{ type: "spring", stiffness: 400 }}
+            >
               {icon}
-            </span>
+            </motion.span>
           )}
           <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             {label}
           </span>
         </div>
-        <div
+        <motion.div
           className={`text-2xl font-bold tabular-nums ${color ?? "text-gray-800 dark:text-gray-100"}`}
         >
           {display}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

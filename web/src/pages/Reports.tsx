@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Models } from "appwrite";
 import type { Heartbeat, Range } from "../types";
 import { fetchHeartbeats } from "../lib/data";
@@ -129,7 +130,7 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
       .then((rows) => {
         let filtered = rows;
         if (range === "custom" && customEnd) {
-          const end = new Date(customEnd + "T23:59:59.999Z").getTime();
+          const end = new Date(customEnd + "T23:59:59").getTime();
           filtered = rows.filter((h) => new Date(h.timestamp).getTime() <= end);
         }
         setHbs(filtered);
@@ -258,10 +259,25 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
     }
   };
 
+  const stagger = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.05 } },
+  } as const;
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: 16 },
+    visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 200, damping: 20 } },
+  };
+
   return (
-    <div className="space-y-5 max-w-6xl mx-auto">
+    <motion.div
+      className="space-y-5 max-w-6xl mx-auto"
+      initial="hidden"
+      animate="visible"
+      variants={stagger}
+    >
       {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-5 sm:p-6 text-white shadow-lg animate-fade-in">
+      <motion.div variants={fadeUp} className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-5 sm:p-6 text-white shadow-lg">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-32 translate-x-32" />
         </div>
@@ -282,15 +298,15 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Range picker */}
-      <div className="flex justify-end">
+      <motion.div variants={fadeUp} className="flex justify-end">
         <RangePicker value={range} onChange={setRange} customStart={customStart} customEnd={customEnd} onCustomStartChange={(d) => { setCustomStart(d); localStorage.setItem("wt_custom_start", d); }} onCustomEndChange={(d) => { setCustomEnd(d); localStorage.setItem("wt_custom_end", d); }} />
-      </div>
+      </motion.div>
 
       {/* Key insights row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-slide-up">
+      <motion.div variants={fadeUp} className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="card p-4">
           <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
             Avg / session
@@ -314,12 +330,14 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
             Write / Read
           </div>
           <div className="text-xl font-bold mt-1 tabular-nums">{writeRatio.toFixed(0)}%</div>
-          <div className="mt-2 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-emerald-500 to-green-500 transition-all duration-700"
-              style={{ width: `${writeRatio}%` }}
-            />
-          </div>
+              <div className="mt-2 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-emerald-500 to-green-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${writeRatio}%` }}
+                  transition={{ type: "spring", stiffness: 80, damping: 18 }}
+                />
+              </div>
         </div>
         <div className="card p-4">
           <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
@@ -343,11 +361,11 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
             <span className="text-red-500">−{totalRemoved}</span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Top projects insight */}
       {topProjs.length > 0 && totalSeconds > 0 && (
-        <div className="card p-4 animate-slide-up" style={{ animationDelay: "25ms" }}>
+        <motion.div variants={fadeUp} className="card p-4">
           <div className="flex items-baseline justify-between mb-3">
             <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300">
               🏆 Top projects
@@ -359,9 +377,11 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
               const pct = totalSeconds > 0 ? (p.totalSeconds / totalSeconds) * 100 : 0;
               const medals = ["🥇", "🥈", "🥉"];
               return (
-                <div
+                <motion.div
                   key={p.name}
-                  className="relative overflow-hidden p-3 rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-900/50 dark:to-gray-800/30 border border-gray-200/50 dark:border-gray-700/50 hover:scale-[1.02] transition-transform"
+                  className="relative overflow-hidden p-3 rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-900/50 dark:to-gray-800/30 border border-gray-200/50 dark:border-gray-700/50"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 15 }}
                 >
                   <div className="absolute top-2 right-2 text-2xl opacity-30">{medals[i]}</div>
                   <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
@@ -377,9 +397,11 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
                     {p.sessions} session{p.sessions !== 1 ? "s" : ""} · {pct.toFixed(0)}%
                   </div>
                   <div className="mt-2 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-brand to-teal-500 rounded-full transition-all duration-700"
-                      style={{ width: `${pct}%` }}
+                    <motion.div
+                      className="h-full bg-gradient-to-r from-brand to-teal-500 rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ type: "spring", stiffness: 80, damping: 18 }}
                     />
                   </div>
                   <div className="text-[10px] text-gray-500 mt-1.5 flex items-center gap-2 tabular-nums">
@@ -387,16 +409,16 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
                     <span>/</span>
                     <span className="text-red-500">−{p.removed}</span>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Editing patterns */}
       {filtered.length > 0 && (
-        <div className="card p-4 animate-slide-up" style={{ animationDelay: "40ms" }}>
+        <motion.div variants={fadeUp} className="card p-4">
           <div className="flex items-baseline justify-between mb-3">
             <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300">
               🎯 Editing patterns
@@ -443,9 +465,11 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
                 {readSessions} read · {writeRatio.toFixed(0)}% write
               </div>
               <div className="mt-1.5 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-emerald-500 to-green-500 transition-all duration-700"
-                  style={{ width: `${writeRatio}%` }}
+                <motion.div
+                  className="h-full bg-gradient-to-r from-emerald-500 to-green-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${writeRatio}%` }}
+                  transition={{ type: "spring", stiffness: 80, damping: 18 }}
                 />
               </div>
             </div>
@@ -460,18 +484,20 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
                 {activeDayRatio.toFixed(0)}% of range
               </div>
               <div className="mt-1.5 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-700"
-                  style={{ width: `${Math.min(100, activeDayRatio)}%` }}
+                <motion.div
+                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${Math.min(100, activeDayRatio)}%` }}
+                  transition={{ type: "spring", stiffness: 80, damping: 18 }}
                 />
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Filters */}
-      <div className="card p-3 flex flex-wrap items-center gap-3 animate-slide-up">
+      <motion.div variants={fadeUp} className="card p-3 flex flex-wrap items-center gap-3">
         <select
           value={filterProject}
           onChange={(e) => setFilterProject(e.target.value)}
@@ -515,11 +541,11 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
             {expanded.size === grouped.length ? "Collapse all" : "Expand all"}
           </button>
         )}
-      </div>
+      </motion.div>
 
       {/* New reports insights */}
       {reportsInsights.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 animate-slide-up">
+        <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
           {reportsInsights.map((ins) => (
             <div
               key={ins.title}
@@ -537,13 +563,13 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
               </div>
             </div>
           ))}
-        </div>
+        </motion.div>
       )}
 
 
 
       {loading ? (
-        <div className="space-y-3 animate-fade-in">
+        <motion.div variants={fadeUp} className="space-y-3">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Skeleton className="h-24" />
             <Skeleton className="h-24" />
@@ -560,14 +586,17 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
           <Skeleton className="h-16" />
           <Skeleton className="h-16" />
           <Skeleton className="h-16" />
-        </div>
+        </motion.div>
       ) : grouped.length === 0 ? (
         <div className="card p-8 text-center">
           <div className="text-4xl mb-2">📭</div>
           <p className="text-gray-500 dark:text-gray-400">No sessions found for this range.</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <motion.div
+          className="space-y-3"
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.04 } } }}
+        >
           {grouped.map(([date, sessions], idx) => {
             const dayTotal = sessions.reduce((s, h) => s + h.durationSeconds, 0);
             const dayAdded = sessions.reduce((s, h) => s + h.linesAdded, 0);
@@ -577,12 +606,10 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
             const isOpen = expanded.has(date);
             const isBest = bestDay?.date === date;
             return (
-              <div
+              <motion.div
                 key={date}
-                className={`card overflow-hidden animate-slide-up ${
-                  isBest ? "ring-2 ring-warm/40" : ""
-                }`}
-                style={{ animationDelay: `${Math.min(idx * 30, 200)}ms` }}
+                variants={fadeUp}
+                className={`card overflow-hidden ${isBest ? "ring-2 ring-warm/40" : ""}`}
               >
                 <button
                   onClick={() => toggleGroup(date)}
@@ -632,8 +659,15 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
                   </div>
                 </button>
 
-                {isOpen && (
-                  <div className="border-t border-gray-200 dark:border-gray-700 bg-gradient-to-b from-gray-50/50 to-white/0 dark:from-gray-900/30 dark:to-gray-800/0 divide-y divide-gray-200/70 dark:divide-gray-700/50">
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.div
+                      className="border-t border-gray-200 dark:border-gray-700 bg-gradient-to-b from-gray-50/50 to-white/0 dark:from-gray-900/30 dark:to-gray-800/0 divide-y divide-gray-200/70 dark:divide-gray-700/50"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    >
                     {sessions.map((h) => (
                       <div
                         key={h.$id}
@@ -695,13 +729,14 @@ export default function Reports({ user }: { user: Models.User<Models.Preferences
                         </div>
                       </div>
                     ))}
-                  </div>
-                )}
-              </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

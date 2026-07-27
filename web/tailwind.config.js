@@ -28,8 +28,6 @@ export default {
         "scale-in": "scaleIn 0.3s ease-out",
         "pulse-soft": "pulseSoft 2s ease-in-out infinite",
         shimmer: "shimmer 2s linear infinite",
-        "ring-pulse": "ringPulse 1.5s ease-in-out infinite",
-        "ring-hit": "ringHit 0.6s ease-out",
       },
       keyframes: {
         fadeIn: { from: { opacity: "0" }, to: { opacity: "1" } },
@@ -45,15 +43,6 @@ export default {
         shimmer: {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
-        },
-        ringPulse: {
-          "0%, 100%": { strokeWidth: "8", filter: "drop-shadow(0 0 6px currentColor)" },
-          "50%": { strokeWidth: "10", filter: "drop-shadow(0 0 12px currentColor)" },
-        },
-        ringHit: {
-          "0%": { transform: "scale(1)" },
-          "40%": { transform: "scale(1.08)" },
-          "100%": { transform: "scale(1)" },
         },
       },
     },
