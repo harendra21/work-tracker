@@ -147,17 +147,11 @@ export class Tracker {
       this.active.lastTouchedAt = Date.now();
       return;
     }
-    let added = 0;
-    let removed = 0;
-    for (const change of e.contentChanges) {
-      const prev = change.text;
-      const nextText = this.active.prevText;
-      const d = diffLines(prev, nextText);
-      added += d.added;
-      removed += d.removed;
-    }
-    this.active.linesAdded += added;
-    this.active.linesRemoved += removed;
+    const text = doc.getText();
+    const d = diffLines(this.active.prevText, text);
+    this.active.linesAdded += d.added;
+    this.active.linesRemoved += d.removed;
+    this.active.prevText = text;
     this.active.lastTouchedAt = Date.now();
   }
 
